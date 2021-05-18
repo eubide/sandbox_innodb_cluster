@@ -10,9 +10,6 @@ first_ip=60
 # the number of nodes
 number_of_slaves = 3
 
-#one server is the master
-# number_of_slaves += 1
-
 # create an array to store the list of ips
 ips = [ "#{base_ip}#{first_ip}" ]
 
@@ -26,7 +23,7 @@ Vagrant.configure(2) do |config|
 
   (1..number_of_slaves).each do |i|
   
-    config.vm.define "node-#{i}" do |node|
+    config.vm.define "node#{i}" do |node|
       node.vm.box = "centos/7"
       node.vm.host_name = "node#{i}"
       node.vm.network "private_network", ip:ips[i]
