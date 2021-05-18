@@ -46,7 +46,7 @@ Vagrant.configure(2) do |config|
     manager.vm.host_name = "manager"
     manager.vm.network "private_network", ip:ips[0]
     manager.vm.provider :virtualbox do |vb|
-      vb.customize ["modifyvm", :id, "--memory", "512"]
+      vb.customize ["modifyvm", :id, "--memory", "256"]
       vb.customize ["modifyvm", :id, "--cpus", "1"]
     end
 

@@ -35,9 +35,20 @@ socket                              = /var/lib/mysql/mysql.sock
 [mysqld]
 socket                              = /var/lib/mysql/mysql.sock
 datadir                             = /var/lib/mysql
+
 user                                = mysql
 
-server_id                           = $NODE_NR
+log_error                           = /var/lib/mysql/node${NODE_NR}.log
+
+
+# # needed for innodb cluster
+server_id                                 = $NODE_NR
+
+# binlog_transaction_dependency_tracking  = WRITESET
+# enforce_gtid_consistency                = ON
+# gtid_mode                               = ON
+# slave_parallel_type                     = LOGICAL_CLOCK
+# slave_preserve_commit_order             = ON
 
 EOF
 
@@ -57,13 +68,20 @@ mysql -e "GRANT ALL ON *.* TO 'app'@'localhost';"
 
 mysql -e "CREATE DATABASE test;"
 
+mysql -e "CREATE USER 'admin'@'%' IDENTIFIED BY 'sekret';"
+mysql -e "GRANT CLONE_ADMIN, CONNECTION_ADMIN, CREATE USER, EXECUTE, FILE, GROUP_REPLICATION_ADMIN, PERSIST_RO_VARIABLES_ADMIN, PROCESS, RELOAD, REPLICATION CLIENT, REPLICATION SLAVE, REPLICATION_APPLIER, REPLICATION_SLAVE_ADMIN, ROLE_ADMIN, SELECT, SHUTDOWN, SYSTEM_VARIABLES_ADMIN ON *.* TO 'admin'@'%' WITH GRANT OPTION;"
+mysql -e "GRANT DELETE, INSERT, UPDATE ON mysql.* TO 'admin'@'%' WITH GRANT OPTION;"
+mysql -e "GRANT ALTER, ALTER ROUTINE, CREATE, CREATE ROUTINE, CREATE TEMPORARY TABLES, CREATE VIEW, DELETE, DROP, EVENT, EXECUTE, INDEX, INSERT, LOCK TABLES, REFERENCES, SHOW VIEW, TRIGGER, UPDATE ON mysql_innodb_cluster_metadata.* TO 'admin'@'%' WITH GRANT OPTION;"
+mysql -e "GRANT ALTER, ALTER ROUTINE, CREATE, CREATE ROUTINE, CREATE TEMPORARY TABLES, CREATE VIEW, DELETE, DROP, EVENT, EXECUTE, INDEX, INSERT, LOCK TABLES, REFERENCES, SHOW VIEW, TRIGGER, UPDATE ON mysql_innodb_cluster_metadata_bkp.* TO 'admin'@'%' WITH GRANT OPTION;"
+mysql -e "GRANT ALTER, ALTER ROUTINE, CREATE, CREATE ROUTINE, CREATE TEMPORARY TABLES, CREATE VIEW, DELETE, DROP, EVENT, EXECUTE, INDEX, INSERT, LOCK TABLES, REFERENCES, SHOW VIEW, TRIGGER, UPDATE ON mysql_innodb_cluster_metadata_previous.* TO 'admin'@'%' WITH GRANT OPTION;"
+
 mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'sekret';"
 
 tee /root/.my.cnf <<EOF
 [client]
 port                                = 3306
 socket                              = /var/lib/mysql/mysql.sock
-user																= root
-password														= sekret
+user                                = root
+password                            = sekret
 
 EOF

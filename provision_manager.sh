@@ -18,6 +18,10 @@ yum -y install wget libaio
 
 yum -y install https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm
 
-yum -y install mysql-community-server
+# yum -y install mysql-community-server
 
-yum -y install mysql-shell mysql-router
+yum -y install mysql-community-client
+
+yum -y install mysql-shell
+
+yum -y install mysql-router
